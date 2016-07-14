@@ -1,0 +1,7 @@
+
+/.envrc
+/.vscode/settings.json
+/vendor/bin
+/vendor/pkg
+/bin/
+/pkg
