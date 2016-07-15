@@ -2,10 +2,23 @@
 	"version": 0,
 	"dependencies": [
 		{
+			"importpath": "github.com/BurntSushi/toml",
+			"repository": "https://github.com/BurntSushi/toml",
+			"revision": "bec2dacf4b590d26237cfebff4471e21ce543494",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/Sirupsen/logrus",
 			"repository": "https://github.com/Sirupsen/logrus",
 			"revision": "32055c351ea8b00b96d70f28db48d9840feaf0ec",
 			"branch": "master"
+		},
+		{
+			"importpath": "github.com/cpuguy83/go-md2man/md2man",
+			"repository": "https://github.com/cpuguy83/go-md2man",
+			"revision": "2724a9c9051aa62e9cca11304e7dd518e9e41599",
+			"branch": "master",
+			"path": "/md2man"
 		},
 		{
 			"importpath": "github.com/davecgh/go-spew/spew",
@@ -13,6 +26,12 @@
 			"revision": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d",
 			"branch": "master",
 			"path": "/spew"
+		},
+		{
+			"importpath": "github.com/fsnotify/fsnotify",
+			"repository": "https://github.com/fsnotify/fsnotify",
+			"revision": "a8a77c9133d2d6fd8334f3260d06f60e8d80a5fb",
+			"branch": "master"
 		},
 		{
 			"importpath": "github.com/google/go-github/github",
@@ -29,21 +48,33 @@
 			"path": "/query"
 		},
 		{
+			"importpath": "github.com/hashicorp/hcl",
+			"repository": "https://github.com/hashicorp/hcl",
+			"revision": "d8c773c4cba11b11539e3d45f93daeaa5dcf1fa1",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/jmoiron/sqlx",
 			"repository": "https://github.com/jmoiron/sqlx",
 			"revision": "bdae0c3219c3bdb92f3d7c70825018712787c933",
 			"branch": "master"
 		},
 		{
-			"importpath": "github.com/kelseyhightower/envconfig",
-			"repository": "https://github.com/kelseyhightower/envconfig",
-			"revision": "91921eb4cf999321cdbeebdba5a03555800d493b",
-			"branch": "master"
-		},
-		{
 			"importpath": "github.com/lib/pq",
 			"repository": "https://github.com/lib/pq",
 			"revision": "4dd446efc17690bc53e154025146f73203b18309",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/magiconair/properties",
+			"repository": "https://github.com/magiconair/properties",
+			"revision": "e2f061ecfdaca9f35b2e2c12346ffc526f138137",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/mitchellh/mapstructure",
+			"repository": "https://github.com/mitchellh/mapstructure",
+			"revision": "21a35fb16463dfb7c8eee579c65d995d95e64d1e",
 			"branch": "master"
 		},
 		{
@@ -58,6 +89,48 @@
 			"revision": "792786c7400a136282c1664665ae0a8db921c6c2",
 			"branch": "master",
 			"path": "/difflib"
+		},
+		{
+			"importpath": "github.com/russross/blackfriday",
+			"repository": "https://github.com/russross/blackfriday",
+			"revision": "1d6b8e9301e720b08a8938b8c25c018285885438",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/shurcooL/sanitized_anchor_name",
+			"repository": "https://github.com/shurcooL/sanitized_anchor_name",
+			"revision": "10ef21a441db47d8b13ebcc5fd2310f636973c77",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/spf13/cast",
+			"repository": "https://github.com/spf13/cast",
+			"revision": "27b586b42e29bec072fe7379259cc719e1289da6",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/spf13/cobra",
+			"repository": "https://github.com/spf13/cobra",
+			"revision": "a272c3cbd5ff80a5bf5c5603df50183f9f3f7324",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/spf13/jwalterweatherman",
+			"repository": "https://github.com/spf13/jwalterweatherman",
+			"revision": "33c24e77fb80341fe7130ee7c594256ff08ccc46",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/spf13/pflag",
+			"repository": "https://github.com/spf13/pflag",
+			"revision": "367864438f1b1a3c7db4da06a2f55b144e6784e0",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/spf13/viper",
+			"repository": "https://github.com/spf13/viper",
+			"revision": "c1ccc378a054ea8d4e38d8c67f6938d4760b53dd",
+			"branch": "master"
 		},
 		{
 			"importpath": "github.com/stretchr/objx",
@@ -83,6 +156,13 @@
 			"repository": "https://go.googlesource.com/oauth2",
 			"revision": "7357e96168422ba1e6e7f21075713b72d58764e7",
 			"branch": "master"
+		},
+		{
+			"importpath": "golang.org/x/sys/unix",
+			"repository": "https://go.googlesource.com/sys",
+			"revision": "b518c298ac9dc94b6ac0757394f50d10c5dfa25a",
+			"branch": "master",
+			"path": "/unix"
 		},
 		{
 			"importpath": "google.golang.org/cloud/compute/metadata",
@@ -115,6 +195,12 @@
 			"repository": "https://gopkg.in/gemnasium/logrus-airbrake-hook.v2",
 			"revision": "31e6fd4bd5a98d8ee7673d24bc54ec73c31810dd",
 			"branch": "master"
+		},
+		{
+			"importpath": "gopkg.in/yaml.v2",
+			"repository": "https://gopkg.in/yaml.v2",
+			"revision": "e4d366fc3c7938e2958e662b4258c7a89e1f0e3e",
+			"branch": "v2"
 		}
 	]
 }
