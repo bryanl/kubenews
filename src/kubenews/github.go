@@ -1,6 +1,7 @@
 package kubenews
 
 import (
+	"math/rand"
 	"strings"
 	"sync"
 	"time"
@@ -21,6 +22,9 @@ var (
 
 	// githubRateLimit is the maximum amount of calls to make during a time period.
 	githubRateLimit = time.Second / 3
+
+	// minThrottleDelay is the amount of time to wait when the github api throttles.
+	minThrottleDelay = time.Second * 30
 )
 
 // Github is a Github client.
@@ -133,13 +137,16 @@ func (gh *Github) GetRepoIssuePage(org, repo string, page int) ([]github.Issue, 
 
 	issues, resp, err := gh.client.Issues.ListByRepo(org, repo, issueOptions)
 	if err != nil {
+		if resp.StatusCode == 403 {
+			buffer := time.Duration(rand.Int31n(30)) * time.Second
+			delayTime := minThrottleDelay + buffer
+			logger.WithField("delayTime", delayTime).Warn("github api throttled, delaying")
+			time.Sleep(delayTime)
+			return gh.GetRepoIssuePage(org, repo, page)
+		}
+
 		logger.WithError(err).Error("listing page")
 		return nil, nil, errors.Wrap(err, "issue retrieval failed")
-	}
-
-	if resp.StatusCode == 403 {
-		logger.WithField("statusCode", resp.StatusCode).Error("too many requests")
-		return nil, nil, errors.Errorf("too many requests: %d (%s)", resp.StatusCode, resp.Status)
 	}
 
 	logger.WithFields(log.Fields{
