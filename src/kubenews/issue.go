@@ -1,6 +1,7 @@
 package kubenews
 
 import (
+	"database/sql"
 	"database/sql/driver"
 	"encoding/json"
 	"fmt"
@@ -42,6 +43,26 @@ type Labels []Label
 // Value is an implementation of driver.Value for Label.
 func (l Labels) Value() (driver.Value, error) {
 	return json.Marshal(l)
+}
+
+// LastUpdate is the time of issues where last updated
+type LastUpdate struct {
+	Repository string     `db:"repository"`
+	At         *time.Time `db:"updated_at"`
+}
+
+// LastIssueUpdate retrieves the last time an issue was updated for a repository.
+func LastIssueUpdate(db *sqlx.DB, repository string) (*LastUpdate, error) {
+	lastUpdate := LastUpdate{}
+	if err := db.Get(&lastUpdate, lastUpdateSQL, repository); err != nil {
+		if err == sql.ErrNoRows {
+			return &LastUpdate{Repository: repository}, nil
+		}
+
+		return nil, errors.Wrap(err, "unable to retrieve last update")
+	}
+
+	return &lastUpdate, nil
 }
 
 // ImportIssues imports issues to our datastore. If the issue exists, it is updated.
@@ -133,5 +154,15 @@ var (
   updated_at, milestone, repository)
 
   VALUES
-  ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`
+  ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+
+  ON conflict (number)
+  DO UPDATE SET (state, title, body, labels, assignee, closed_at, updated_at, milestone) =
+    ($2, $3, $4, $6, $7, $8, $10, $11)
+  WHERE issues.number = $1`
+
+	lastUpdateSQL = `
+  SELECT updated_at FROM issues
+  WHERE repository = $1
+  ORDER BY updated_at desc limit 1`
 )

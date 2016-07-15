@@ -63,7 +63,7 @@ func splitRepo(repoName string) (string, string, error) {
 
 // ListRepoIssues lists issues for a repository. It returns a list of issues and
 // an error if an exception occurs.
-func (gh *Github) ListRepoIssues(repoName string) ([]github.Issue, error) {
+func (gh *Github) ListRepoIssues(repoName string, since *time.Time) ([]github.Issue, error) {
 	org, repo, err := splitRepo(repoName)
 	if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (gh *Github) ListRepoIssues(repoName string) ([]github.Issue, error) {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	allIssues, resp, err := gh.GetRepoIssuePage(org, repo, 0)
+	allIssues, resp, err := gh.GetRepoIssuePage(org, repo, 0, since)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func (gh *Github) ListRepoIssues(repoName string) ([]github.Issue, error) {
 			}
 
 			defer wg.Done()
-			if err := w.start(ctx, pageChan, outChan); err != nil {
+			if err := w.start(ctx, since, pageChan, outChan); err != nil {
 				log.WithError(err).Error("worker failed")
 				cancel()
 			}
@@ -124,7 +124,7 @@ func (gh *Github) ListRepoIssues(repoName string) ([]github.Issue, error) {
 }
 
 // GetRepoIssuePage retrieves issues by page.
-func (gh *Github) GetRepoIssuePage(org, repo string, page int) ([]github.Issue, *github.Response, error) {
+func (gh *Github) GetRepoIssuePage(org, repo string, page int, since *time.Time) ([]github.Issue, *github.Response, error) {
 	logger := log.WithField("currentPage", page)
 	logger.Debug("fetching page")
 	issueOptions := &github.IssueListByRepoOptions{
@@ -135,6 +135,10 @@ func (gh *Github) GetRepoIssuePage(org, repo string, page int) ([]github.Issue, 
 		},
 	}
 
+	if since != nil {
+		issueOptions.Since = *since
+	}
+
 	issues, resp, err := gh.client.Issues.ListByRepo(org, repo, issueOptions)
 	if err != nil {
 		if resp.StatusCode == 403 {
@@ -142,7 +146,7 @@ func (gh *Github) GetRepoIssuePage(org, repo string, page int) ([]github.Issue, 
 			delayTime := minThrottleDelay + buffer
 			logger.WithField("delayTime", delayTime).Warn("github api throttled, delaying")
 			time.Sleep(delayTime)
-			return gh.GetRepoIssuePage(org, repo, page)
+			return gh.GetRepoIssuePage(org, repo, page, since)
 		}
 
 		logger.WithError(err).Error("listing page")
@@ -168,7 +172,7 @@ type worker struct {
 	repo string
 }
 
-func (w *worker) start(ctx context.Context, pageChan chan int, out chan github.Issue) error {
+func (w *worker) start(ctx context.Context, since *time.Time, pageChan chan int, out chan github.Issue) error {
 	logger := log.WithFields(log.Fields{"workerID": w.id})
 	logger.Info("starting up")
 	done := false
@@ -182,7 +186,7 @@ func (w *worker) start(ctx context.Context, pageChan chan int, out chan github.I
 				logger.Info("closed channel detected: shutting down")
 				done = true
 			} else {
-				issues, _, err := w.gh.GetRepoIssuePage(w.org, w.repo, page)
+				issues, _, err := w.gh.GetRepoIssuePage(w.org, w.repo, page, since)
 				if err != nil {
 					return err
 				}

@@ -32,7 +32,15 @@ func main() {
 
 	repo := "kubernetes/kubernetes"
 
-	issues, err := gh.ListRepoIssues(repo)
+	lastUpdate, err := kubenews.LastIssueUpdate(db, repo)
+	if err != nil {
+		log.WithError(err).Fatal("unable to retrieve last issue update")
+	}
+	log.WithFields(log.Fields{
+		"lastUpdate": lastUpdate.At,
+		"repo":       repo}).Info("issues last update")
+
+	issues, err := gh.ListRepoIssues(repo, lastUpdate.At)
 	if err != nil {
 		log.WithError(err).Fatal("list all issues")
 	}
@@ -40,6 +48,8 @@ func main() {
 	if err := kubenews.ImportIssues(db, repo, issues); err != nil {
 		log.WithError(err).Fatal("cannot import issues")
 	}
+
+	log.WithField("issueCount", len(issues)).Info("triaging issues")
 
 	for _, issue := range issues {
 		issueMap[*issue.ID] = issue
