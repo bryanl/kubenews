@@ -8,6 +8,13 @@
 			"branch": "master"
 		},
 		{
+			"importpath": "github.com/davecgh/go-spew/spew",
+			"repository": "https://github.com/davecgh/go-spew",
+			"revision": "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d",
+			"branch": "master",
+			"path": "/spew"
+		},
+		{
 			"importpath": "github.com/google/go-github/github",
 			"repository": "https://github.com/google/go-github",
 			"revision": "dc287189c098690cab775b75e22cf0482d47f9ac",
@@ -22,9 +29,46 @@
 			"path": "/query"
 		},
 		{
+			"importpath": "github.com/jmoiron/sqlx",
+			"repository": "https://github.com/jmoiron/sqlx",
+			"revision": "bdae0c3219c3bdb92f3d7c70825018712787c933",
+			"branch": "master"
+		},
+		{
 			"importpath": "github.com/kelseyhightower/envconfig",
 			"repository": "https://github.com/kelseyhightower/envconfig",
 			"revision": "91921eb4cf999321cdbeebdba5a03555800d493b",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/lib/pq",
+			"repository": "https://github.com/lib/pq",
+			"revision": "4dd446efc17690bc53e154025146f73203b18309",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/pkg/errors",
+			"repository": "https://github.com/pkg/errors",
+			"revision": "a2d6902c6d2a2f194eb3fb474981ab7867c81505",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/pmezard/go-difflib/difflib",
+			"repository": "https://github.com/pmezard/go-difflib",
+			"revision": "792786c7400a136282c1664665ae0a8db921c6c2",
+			"branch": "master",
+			"path": "/difflib"
+		},
+		{
+			"importpath": "github.com/stretchr/objx",
+			"repository": "https://github.com/stretchr/objx",
+			"revision": "1a9d0bb9f541897e62256577b352fdbc1fb4fd94",
+			"branch": "master"
+		},
+		{
+			"importpath": "github.com/stretchr/testify",
+			"repository": "https://github.com/stretchr/testify",
+			"revision": "d77da356e56a7428ad25149ca77381849a6a5232",
 			"branch": "master"
 		},
 		{
@@ -53,6 +97,12 @@
 			"revision": "abc55035ece67841a0419d4b66017317a232015d",
 			"branch": "master",
 			"path": "/internal"
+		},
+		{
+			"importpath": "gopkg.in/DATA-DOG/go-sqlmock.v1",
+			"repository": "https://gopkg.in/DATA-DOG/go-sqlmock.v1",
+			"revision": "9958e5c69de03e97ec215b23f6fcae1f600c3fb6",
+			"branch": "master"
 		},
 		{
 			"importpath": "gopkg.in/airbrake/gobrake.v2",
