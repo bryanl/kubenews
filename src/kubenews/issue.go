@@ -8,6 +8,7 @@ import (
 	"os"
 	"time"
 
+	log "github.com/Sirupsen/logrus"
 	"github.com/google/go-github/github"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -22,7 +23,7 @@ type Issue struct {
 	Body       string     `db:"body"`
 	User       string     `db:"created_by"`
 	Labels     Labels     `db:"labels"`
-	Assignee   string     `db:"asignee"`
+	Assignee   string     `db:"assignee"`
 	ClosedAt   *time.Time `db:"closed_at"`
 	CreatedAt  *time.Time `db:"created_at"`
 	UpdatedAt  *time.Time `db:"updated_at"`
@@ -40,9 +41,19 @@ type Label struct {
 // Labels is a slice of Label.
 type Labels []Label
 
-// Value is an implementation of driver.Value for Label.
+// Value is an implementation of driver.Value for Labels.
 func (l Labels) Value() (driver.Value, error) {
 	return json.Marshal(l)
+}
+
+// Scan converts a DB value back into Labels.
+func (l *Labels) Scan(src interface{}) error {
+	if src == nil {
+		return nil
+	}
+
+	b := json.RawMessage(src.([]uint8))
+	return json.Unmarshal(b, l)
 }
 
 // LastUpdate is the time of issues where last updated
@@ -81,6 +92,7 @@ func ImportIssues(db *sqlx.DB, repository string, inIssues []github.Issue) error
 		err = tx.Commit()
 	}()
 
+	log.Info("updating or importing issues")
 	for _, in := range inIssues {
 		issue := ConvertIssue(repository, in)
 
@@ -88,6 +100,31 @@ func ImportIssues(db *sqlx.DB, repository string, inIssues []github.Issue) error
 			issue.User, issue.Labels, issue.Assignee, issue.ClosedAt, issue.CreatedAt,
 			issue.UpdatedAt, issue.Milestone, issue.Repository); err != nil {
 			return err
+		}
+	}
+
+	log.Info("analyzing labels")
+	labels := map[string]Label{}
+
+	issue := Issue{}
+	rows, err := db.Queryx(activeIssuesSQL)
+	if err != nil {
+		return errors.Wrap(err, "query open issues failure")
+	}
+	for rows.Next() {
+		err := rows.StructScan(&issue)
+		if err != nil {
+			return errors.Wrap(err, "scan issue into struct failure")
+		}
+
+		for _, label := range issue.Labels {
+			labels[label.Name] = label
+		}
+	}
+
+	for _, label := range labels {
+		if _, err := tx.Exec(insertLabelSQL, label.Name, label.URL, label.Color); err != nil {
+			return errors.Wrap(err, "insert label")
 		}
 	}
 
@@ -165,4 +202,21 @@ var (
   SELECT updated_at FROM issues
   WHERE repository = $1
   ORDER BY updated_at desc limit 1`
+
+	insertLabelSQL = `
+  INSERT INTO labels
+  (name, url, color, active)
+
+  VALUES
+  ($1, $2, $3, true)
+
+  ON conflict(name)
+  DO UPDATE SET (url, color, active) = ($2, $3, true)
+  WHERE labels.name = $1`
+
+	activeIssuesSQL = `
+  SELECT id, number, state, title, body, created_by, labels, assignee, closed_at,
+    created_at, updated_at, milestone, repository
+  FROM issues
+  WHERE state = 'open'`
 )
